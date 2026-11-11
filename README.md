@@ -311,7 +311,9 @@ Commercial large-scale front-end engines often suffer from structural friction b
 💡 **免責事項 / Disclaimer**
 
 • العربية: هذا التقرير هو دراسة بحثية تقنية تهدف إلى استكشاف أساليب تحسين أداء WebGL/Emscripten، ولا يشجع أو يروج لإعادة هندسة أو تعديل غير مصرح به لأي ألعاب تجارية محددة.
+
 • English: This report is a technical research document aimed at exploring WebGL/Emscripten optimization methodologies. It does not encourage, endorse, or promote reverse-engineering or unauthorized modification of any specific commercial titles.
+
 • 日本語: 本レポートはWeb技術（WebGL/Emscripten）の最適化手法に関する学習・研究を目的としたものであり、特定のゲームタイトルのリバースエンジニアリングや不正な改変を推奨するものではありません。
 
 
