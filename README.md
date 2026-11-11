@@ -75,7 +75,6 @@ Shifted from "copy-by-value" to "pass-by-pointer (reference)," utilizing the ass
 function abstractWriteFile(path, rawBytes) {
     // يلغي تماماً النسخ المتكرر في مساحة الذاكرة لمنع الضغط على آلية تنظيف الذاكرة
     // Completely eliminates duplicate copying in memory space to prevent GC overhead
-function abstractWriteFile(path, rawBytes) {
     // メモリ空間上での重複コピーを完全廃止し、GCを回避
     FS.writeFile(path, rawBytes, { canOwn: true }); 
 }
