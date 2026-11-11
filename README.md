@@ -40,6 +40,7 @@ This research eliminates the "redundant data copying" and "inefficient lookup al
 Unity WebGLゲームにおけるJavaScriptブリッジ（仮想ファイルシステムおよびデバイス管理周辺）は、特にモバイルブラウザ（スマホ）においてメモリリークやガベージコレクション（GC）によるカクつき（スパイク）の原因になりやすい領域です。
 本研究では、既存の一般的な実装に見られる「冗長なデータコピー」と「非効率な探索アルゴリズム」を解消し、低スペック端末でも安定して動作するコードへのリファクタリングを行いました。
 
+---
 
 ### 🛠 محاور التحسين الرئيسية (Key Optimizations)
 
@@ -185,6 +186,10 @@ const syncWrapper = (originalFunc) => (...args) => {
 
 3-2. 詳細な実装ロジックと高度な自動化コア
 
+
+---
+
+
 • [AR] لتجنب المشاكل الناتجة عن اختلاف الهياكل الداخلية في بيئات التشغيل التجارية، نقوم بدمج جميع عمليات التحقق وتوسيع نطاق المصفوفة ليشمل روتينات المزامنة المتقدمة لجميع العمليات الحركية لنظام الملفات، مع ضمان اتجاه القراءة من اليسار إلى اليمين (LTR) لمنع أي تداخل في التفسير البرمجي.
 javascript
 
@@ -192,6 +197,7 @@ javascript
 
 • [JA] 商用システムごとの内部構造の差異による不具合を防止するため、存在チェックを統合。すべてのファイルシステム操作にわたって高度な同期ルーチンを一括バインドできるように配列の境界を拡張し、コードの解釈エラーを防ぐ完全なLTR仕様で実装を定義します。
 
+```javascript
 // [AR] الكود البرمجي المحسّن لربط عمليات نظام الملفات (راجع المستندات المرجعية للاطلاع على الكود الكامل)
 // [EN] Optimized pseudo-code for bulk-binding file system operations (refer to source block for full code)
 // [JA] ファイルシステム操作を一括バインドする最適化擬似コード（詳細は参照元コードブロックをご確認ください）
@@ -211,6 +217,7 @@ const syncWrapper = (originalFunc) => {
         mnt.node_ops[op] = syncWrapper(mnt.node_ops[op]);
     }
 });
+```
 
 ---
 
@@ -237,12 +244,18 @@ const syncWrapper = (originalFunc) => {
 3. **バッテリー消費・発熱の抑制:** CPUの総計算量が減るため、特にモバイル端末における発熱が緩和されます。
 
 
+---
+
 
 ### 🔬 [Deep Analysis] - التحليل العميق - [詳細解析]
 
 *   **Arabic (العربية - LTR Mode):** التحليل العميق: الواقع الخفي لبنية WebGL الهيكلية التجارية والعيوب القاتلة في هندسة النظام
 *   **English:** Deep Analysis: The Hidden Reality of Commercial WebGL Architecture and Fatal Flaws in System Engineering
 *   **日本語:** 詳細解析：商用WebGLゲームにおける「隠された惨状」とアーキテクチャ上の致命的欠陥
+
+
+---
+
 
 • Arabic (العربية - LTR Mode): [التحليل العميق] الواقع الخفي لبنية WebGL الهيكلية التجارية
 تعاني المحركات الواجهية التجارية الكبيرة من احتكاك هيكلي بين Emscripten (Wasm) وإدارة الحالة الأصلية في JavaScript. وللتكيف مع مواصفات المتصفح الفريدة (مثل دورة الحياة وقواعد التخزين المتقلبة في iOS Safari)، يقوم المطورون بإضافة روتينات تجاوز محلية على طبقة الجسر. إن تقييم حلقات الشرط الديناميكية لآلاف الكائنات النشطة في كل إطار يؤدي إلى أخطاء فادحة في التنبؤ بالتفرع الشرطي (Branch Misprediction) وعبء ثقيل في تبديل السياق (Context-Switching)، مما يؤدي إلى تعطيل خيط الرسم الرئيسي تماماً.
@@ -253,13 +266,20 @@ Commercial large-scale front-end engines often suffer from structural friction b
 • 日本語: [詳細解析] 商用WebGLゲームにおける「隠された惨状」とアーキテクチャ上の致命的欠陥
 商用ゲームのコードを読み解くと、Emscripten（C++/Wasm）と生のJavaScriptの二重管理における構造的破綻が泥沼化しています。iOS Safari等のブラウザ固有の仕様（ストレージ制限やライフサイクル）に対応するため、ブリッジ側に場当たり的な上書きロジック（自動セーブパッチ等）を力技で継ぎ足した結果、同じ条件判定を繰り返す歪な多重構造が生まれています。また、デバイス変更（devicechange）検知時に全デバイスを総当たりでループ評価するため、短時間にイベントが頻発するとCPUの分岐予測ミスが多発し、メインスレッドが数フレーム完全にロック（ストール）される致命的な相性の悪さを抱えています。
 
+
+---
+
+
 👑 [The Sovereign Solutions] ⸺ الحلول السيادية المتقدمة ⸺ 「本当の最適化の答え」
 
 
-[Solution A] Complete Bypass of the JavaScript Bridge Layer
-
 
 [الحل أ] التجاوز الكامل لطبقة جسر JavaScript
+
+---
+
+
+[Solution A] Complete Bypass of the JavaScript Bridge Layer
 
 
 [解決策 A] JavaScriptブリッジ層の完全なバイパス（スキップ）化
@@ -270,11 +290,13 @@ Commercial large-scale front-end engines often suffer from structural friction b
 
 • 日本語: 本当にUnity WebGLのパフォーマンスを極限まで引き上げる場合、JavaScript側でラッパーを組んで綺麗に処理する設計すら排除し、「JSブリッジ自体を完全消去（スキップ）する」のが最強の答えです。ブラウザのWeb API（ファイル書き込みやデバイス列挙）をJavaScriptを経由させずに、C++（Wasm側）から直接システムコール（ポインタ直叩き）で呼び出す共有メモリ・バイパスアーキテクチャへ移行させます。これにより、JS/Wasm間のデータシリアライズ（変換）コストを文字通り「ゼロ」にします。
 
-[Solution B] Pure Branchless Execution via Flat Bit-Mask Matrix Lookups
+
+---
 
 
 [الحل ب] التشغيل الخالي من التفرع عبر مصفوفات البت المسطحة
 
+[Solution B] Pure Branchless Execution via Flat Bit-Mask Matrix Lookups
 
 [解決策 B] ビットマスクによる「条件分岐の完全消去（Branchlessマトリックス）」
 
@@ -293,7 +315,7 @@ Commercial large-scale front-end engines often suffer from structural friction b
 • 日本語: 本レポートはWeb技術（WebGL/Emscripten）の最適化手法に関する学習・研究を目的としたものであり、特定のゲームタイトルのリバースエンジニアリングや不正な改変を推奨するものではありません。
 
 
-
+---
 
 
 💼 Business Inquiries & Paid Consulting
