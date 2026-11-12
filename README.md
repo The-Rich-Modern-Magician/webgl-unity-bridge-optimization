@@ -337,4 +337,6 @@ Production-ready source codes, full integration frameworks, and bespoke consulti
 
 本レポートで紹介したWebGLブリッジの「ゼロコピー化アルゴリズム」および「ファイルシステムの統合バインディング」について、実際のプロダクション環境への導入支援、完全な最適化コードの提供、および個別最適化コンサルティングは有償（ビジネス契約）にて提供しております。 秘密保持契約（NDA）締結の上、御社固有のコードベースに合わせた最適なインテグレーションを行います。ご興味のあるテックチーフの方は、DMまでご連絡ください。
 
+DM: TheRichModernMagician@tuta.com
+
 اللَّهُ أَكْبَرُ
