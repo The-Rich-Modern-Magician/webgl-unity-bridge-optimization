@@ -3,6 +3,7 @@
 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
 
 <img width="670" height="430" alt="148" src="https://github.com/user-attachments/assets/cd92b8d5-5868-45ed-afe4-97352e45208c" />
+<img width="673" height="441" alt="123" src="https://github.com/user-attachments/assets/e7f26a50-209a-4f37-82ac-ae7a52711c84" />
 
 
 > **Algorithmic Fractal Art ("New Math" Series)**  
