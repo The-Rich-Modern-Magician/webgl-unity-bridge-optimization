@@ -2,7 +2,13 @@
 
 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
 
-https://i2c.seadn.io/ethereum/0xba423ff89699cb43aa289b19b07659fa75c56520/72b816198f157c3670b621996f2fc6/df72b816198f157c3670b621996f2fc6.png?w=500
+<img width="670" height="430" alt="148" src="https://github.com/user-attachments/assets/cd92b8d5-5868-45ed-afe4-97352e45208c" />
+
+
+> **Algorithmic Fractal Art ("New Math" Series)**  
+> *Engineered in Japan. Minted on Ethereum Blockchain as a Private Collection (Not Listed / Invitation & Offer Only).*  
+> 🔗 [View Collection on OpenSea](https://opensea.io/collection/the-rich-modern-magician-587311297)
+
 
 ---
 
