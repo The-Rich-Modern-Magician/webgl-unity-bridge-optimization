@@ -4,6 +4,9 @@
 
 <img width="670" height="430" alt="148" src="https://github.com/user-attachments/assets/cd92b8d5-5868-45ed-afe4-97352e45208c" />
 <img width="673" height="441" alt="123" src="https://github.com/user-attachments/assets/e7f26a50-209a-4f37-82ac-ae7a52711c84" />
+<img width="667" height="558" alt="79" src="https://github.com/user-attachments/assets/9bae0b53-a15b-4665-ba06-72f7e6d0f636" />
+<img width="662" height="419" alt="102" src="https://github.com/user-attachments/assets/58cada91-535e-4115-9d7c-9665f96b6ada" />
+
 
 
 > **Algorithmic Fractal Art ("New Math" Series)**  
