@@ -84,13 +84,13 @@ Shifted from "copy-by-value" to "pass-by-pointer (reference)," utilizing the ass
 データの「値のコピー」ではなく「ポインタ（参照）の受け渡し」に変更し、Emscriptenのファイルシステム設定で所有権を委譲するオプション（`canOwn: true`）を指定しました。
 
 ```javascript
-// مفهوم التحسين (شيفرة افتراضية)
-// Optimization Concept (Pseudo-code)
-// 改善のイメージ（擬似コード）
+// [AR] مفهوم التحسين (شيفرة افتراضية)
+// [EN]  Optimization Concept (Pseudo-code)
+// [JP]  改善のイメージ（擬似コード）
 function abstractWriteFile(path, rawBytes) {
-    // يلغي تماماً النسخ المتكرر في مساحة الذاكرة لمنع الضغط على آلية تنظيف الذاكرة
-    // Completely eliminates duplicate copying in memory space to prevent GC overhead
-    // メモリ空間上での重複コピーを完全廃止し、GCを回避
+    // [AR] يلغي تماماً النسخ المتكرر في مساحة الذاكرة لمنع الضغط على آلية تنظيف الذاكرة
+    // [EN]  Completely eliminates duplicate copying in memory space to prevent GC overhead
+    // [JP]  メモリ空間上での重複コピーを完全廃止し、GCを回避
     FS.writeFile(path, rawBytes, { canOwn: true }); 
 }
 ```
@@ -128,9 +128,9 @@ Consolidated the four consecutive loops into a single-pass search utilizing Java
 
 
 ```javascript
-// مفهوم التحسين (شيفرة افتراضية)
-// Optimization Concept (Pseudo-code)
-// 改善のイメージ（擬似コード）
+// [AR] مفهوم التحسين (شيفرة افتراضية)
+// [EN]  Optimization Concept (Pseudo-code)
+// [JP]  改善のイメージ（擬似コード）
 function optimizedDeviceMatch(newDevice, oldDevices) {
     return oldDevices.find(old => old.id === newDevice.id) ||
            oldDevices.find(old => old.label === newDevice.label) ||
@@ -179,9 +179,9 @@ Introduced a higher-order function (wrapper function) to dynamically bind synchr
 
 
 ```javascript
-// مفهوم التحسين عبر تدوير المصفوفة
-// Optimization Concept via Array Mapping
-// 配列マッピングによる一括最適化のイメージ
+// [AR] مفهوم التحسين عبر تدوير المصفوفة
+// [EN]  Optimization Concept via Array Mapping
+// [JP]  配列マッピングによる一括最適化のイメージ
 const syncWrapper = (originalFunc) => (...args) => {
     triggerIndexedDBSync();
     return originalFunc(...args);
@@ -205,7 +205,6 @@ const syncWrapper = (originalFunc) => (...args) => {
 
 
 • [AR] لتجنب المشاكل الناتجة عن اختلاف الهياكل الداخلية في بيئات التشغيل التجارية، نقوم بدمج جميع عمليات التحقق وتوسيع نطاق المصفوفة ليشمل روتينات المزامنة المتقدمة لجميع العمليات الحركية لنظام الملفات، مع ضمان اتجاه القراءة من اليسار إلى اليمين (LTR) لمنع أي تداخل في التفسير البرمجي.
-javascript
 
 • [EN] To mitigate discrepancies caused by varying internal structures across different environments, we unify existence checks and expand the array boundaries to map advanced synchronization across all file operations, enforcing a strict Left-to-Right (LTR) layout to prevent architectural regressions.
 
@@ -235,42 +234,42 @@ const syncWrapper = (originalFunc) => {
 
 ---
 
-٤. التحكم في القفل الحصري لـ IndexedDB وقاطع الدائرة للشبكة (Arabic)
+#### ٤. التحكم في القفل الحصري لـ IndexedDB وقاطع الدائرة للشبكة (Arabic)
 
 
-🔴 التحدي (Before)
+#### 🔴 التحدي (Before)
 
 • تعارض مزامنة التخزين (Deadlock): عند كتابة سجلات المعارك الفورية وبيانات الحالة بكثافة في وقت قصير، كانت معاملات FS.syncfs غير المتزامنة تعمل بشكل متوازي وتتعارض، مما يؤدي إلى تجمد الخيط الرئيسي (Main Thread).
 • حلقة إعادة المحاولة اللانهائية: عند حدوث خطأ في الاتصال بالخادم (network_error)، كانت طلبات التحليلات وواجهة برمجة التطبيقات (API) تعيد المحاولة باستمرار دون فترة انتظار، مما يستنزف ذاكرة المتصفح ووحدة المعالجة المركزية (CPU).
 
-🟢 حل المعالجة (After)
+#### 🟢 حل المعالجة (After)
 
 • التحكم بالقفل الحصري (Mutex) عبر طابور الوعود (Promise Queue): تسلسل عمليات الكتابة في IDBFS (معالجتها واحدة تلو الأخرى بالترتيب) وإدخال آلية قفل تجعل المعاملة التالية تنتظر حتى تكتمل المزامنة الجارية.
 • قاطع دائرة مع تراجع أسي (Exponential Backoff): تمديد فترة إعادة المحاولة بشكل أسي عند اكتشاف أخطاء متتالية (500ms ← 1s ← 2s ← 4s...)، وقطع الاتصال مؤقتاً بعد عدد معين من الإخفاقات لمنع تجمد المتصفح.
 
-4. IndexedDB Mutex Lock Control & Network Circuit Breaker (English)
+#### 4. IndexedDB Mutex Lock Control & Network Circuit Breaker (English)
 
 
-🔴 Challenge (Before)
+#### 🔴 Challenge (Before)
 
 • Storage Sync Contention (Deadlock): When high-frequency real-time battle logs and state updates were written rapidly, asynchronous FS.syncfs transactions fired concurrently and collided, freezing the main thread.
 • Unbounded Retry Loop: Upon encountering a server-side network_error, analytics and API requests retried continuously with zero delay, exhausting browser RAM and CPU resources.
 
-🟢 Remediation Approach (After)
+#### 🟢 Remediation Approach (After)
 
 • Promise-Queue Mutex Lock Control: Serialized IDBFS write operations (processing them strictly one at a time) via a mutex lock so pending transactions wait until the active sync completes.
 • Circuit Breaker with Exponential Backoff: Exponentially increased retry intervals upon consecutive failures (500ms → 1s → 2s → 4s...) and temporarily tripped the circuit open after a failure threshold to prevent browser freezes.
 
 
-4. IndexedDBの排他ロック制御と通信サーキットブレーカー
+#### 4. IndexedDBの排他ロック制御と通信サーキットブレーカー
 
 
-🔴 課題 (Before)
+#### 🔴 課題 (Before)
 
 • ストレージ同期の競合（デッドロック）: リアルタイムの戦闘ログや状態データが短時間に大量書き込みされると、FS.syncfs の非同期トランザクションが多重起動して衝突し、メインスレッドが凍結（フリーズ）していました。
 • リトライ暴走（無限ループ）: サーバー側の通信エラー（network_error）発生時に、分析通信やAPIリクエストが待機時間なしで連続リトライを繰り返し、ブラウザのメモリとCPUを枯渇させていました。
 
-🟢 解消アプローチ (After)
+#### 🟢 解消アプローチ (After)
 
 • Promiseキューによる排他ロック（Mutex）制御: IDBFS の書き込みリクエストを直列化（1つずつ順番に処理）し、進行中の同期が完了するまで次のトランザクションを待機させるロック機構を導入しました。
 • 指数バックオフ付きサーキットブレーカー: 連続エラー検知時に再試行間隔を指数関数的に延長（500ms → 1s → 2s → 4s...）し、一定回数失敗した場合は一時的に通信を遮断してブラウザのフリーズを防止します。
@@ -324,41 +323,41 @@ class NetworkCircuitBreaker {
 ---
 
 
-٥. عزل تخزين جلسة المصادقة عن ذاكرة التخزين المؤقت للأصول (Arabic)
+#### ٥. عزل تخزين جلسة المصادقة عن ذاكرة التخزين المؤقت للأصول (Arabic)
 
 
-🔴 التحدي (Before)
+#### 🔴 التحدي (Before)
 
 • الاقتران الوثيق بين المصادقة والبيانات المؤقتة: تم تخزين رموز جلسة تسجيل الدخول (AccessToken / SessionID) وبيانات الأصول القابلة للتلف داخل نفس مساحة تخزين المتصفح (IndexedDB / LocalStorage).
 • حلقة إعادة المصادقة القسرية: عند تلف البيانات المؤقتة بسبب خطأ في الشبكة، يؤدي مسح تخزين الموقع لإصلاح التجمد إلى مسح جلسة المصادقة أيضاً، مما يفرض تسجيل الخروج وإعادة الربط عبر رمز الاستجابة السريعة (QR) في كل مرة.
 
-🟢 حل المعالجة (After)
+#### 🟢 حل المعالجة (After)
 
 • فصل مساحات التخزين (Storage Namespace Isolation): تقسيم التخزين إلى نطاقين مستقلين تماماً؛ نطاق مخصص لبيانات الاعتماد (Auth Vault) ونطاق منفصل لذاكرة التخزين المؤقت للأصول (Asset Cache).
 • التعافي الذاتي الآمن: عند اكتشاف تلف في بيانات اللعبة، يتم مسح نطاق الأصول (Asset Cache) فقط برمجياً مع الحفاظ على جلسة المصادقة سليمة بنسبة 100% دون الحاجة لتسجيل الدخول مجدداً.
 
-5. Decoupling Authentication Session Storage from Asset Cache (English)
+#### 5. Decoupling Authentication Session Storage from Asset Cache (English)
 
 
-🔴 Challenge (Before)
+#### 🔴 Challenge (Before)
 
 • Tight Coupling of Auth & Cache: Login session tokens (AccessToken / SessionID) and volatile game asset caches were co-located inside the same browser storage (IndexedDB / LocalStorage).
 • Forced Re-Authentication Loop: Whenever network errors corrupted the asset cache, clearing site storage to recover from a freeze also wiped the login session—forcing users to log out and re-authenticate via mobile QR code every single time.
 
-🟢 Remediation Approach (After)
+#### 🟢 Remediation Approach (After)
 
 • Storage Namespace Isolation: Split browser persistence into two completely isolated namespaces: a dedicated Auth Vault for session tokens and a disposable Asset Cache for game binaries.
 • Non-Destructive Self-Healing: Upon detecting cache corruption or a load stall, the launcher purges only the Asset Cache namespace while preserving the Auth Vault intact, eliminating forced logouts.
 
-5. 認証セッションストレージとアセットキャッシュの完全分離 (Japanese)
+#### 5. 認証セッションストレージとアセットキャッシュの完全分離 (Japanese)
 
 
-🔴 課題 (Before)
+#### 🔴 課題 (Before)
 
 • 認証情報とキャッシュの密結合: ログインセッション（AccessToken / SessionID）と破損しやすいアセットキャッシュが、同じブラウザストレージ領域（IndexedDB / LocalStorage）に混在していました。
 • 強制ログアウト・再認証ループ: 通信エラーでキャッシュが破損した際、フリーズ復旧のためにサイトストレージを消去すると認証キーまで消えてしまい、毎回スマホでのQR再認証を強いられる構造になっていました。
 
-🟢 解消アプローチ (After)
+#### 🟢 解消アプローチ (After)
 
 • ストレージ名前空間（Namespace）の完全分離: 認証トークン専用の保護領域（Auth Vault）と、破棄可能なゲームデータ領域（Asset Cache）を別々のストレージ領域に分離しました。
 • 非破壊的な自動自己修復（Self-Healing）: ロード停止やキャッシュ破損を検知した際、認証領域には一切触れずに Asset Cache だけを自動パージ（再構築）する仕組みを導入し、ログイン状態を維持したまま復旧できるようにしました。
