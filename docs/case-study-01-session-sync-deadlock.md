@@ -1,6 +1,3 @@
-
-بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-
 <div align="center">
 
 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
@@ -12,8 +9,7 @@
   </tr>
   <tr>
     <td><img width="600" alt="1728270540-BMtz2ym1JxGOesfTXPcjrbqL" src="https://github.com/user-attachments/assets/7914336c-0933-4d44-be90-b5879f93d5c5" /></td>
-    <td><img width="600" alt="1728270540-10izvTUdDrkYfnIjF2H9glEX" src="• https://github.com/user-attachments/assets/bd1bcb2b-00c6-44b0-88d5-c79912c88aed
-" /></td>
+    <td><img width="600" alt="1728270540-10izvTUdDrkYfnIjF2H9glEX" src="• https://github.com/user-attachments/assets/bd1bcb2b-00c6-44b0-88d5-c79912c88aed" /></td>
   </tr>
 </table>
 
@@ -180,5 +176,6 @@ This technical case study analyzes a critical login lockout and main-thread free
 
 💼 Business Inquiries & Paid Consulting: TheRichModernMagician@tuta.com
 
-
+<div dir="rtl">
 اللَّهُ أَكْبَرُ
+</div>
