@@ -235,6 +235,168 @@ const syncWrapper = (originalFunc) => {
 
 ---
 
+٤. التحكم في القفل الحصري لـ IndexedDB وقاطع الدائرة للشبكة (Arabic)
+
+
+🔴 التحدي (Before)
+
+• تعارض مزامنة التخزين (Deadlock): عند كتابة سجلات المعارك الفورية وبيانات الحالة بكثافة في وقت قصير، كانت معاملات FS.syncfs غير المتزامنة تعمل بشكل متوازي وتتعارض، مما يؤدي إلى تجمد الخيط الرئيسي (Main Thread).
+• حلقة إعادة المحاولة اللانهائية: عند حدوث خطأ في الاتصال بالخادم (network_error)، كانت طلبات التحليلات وواجهة برمجة التطبيقات (API) تعيد المحاولة باستمرار دون فترة انتظار، مما يستنزف ذاكرة المتصفح ووحدة المعالجة المركزية (CPU).
+
+🟢 حل المعالجة (After)
+
+• التحكم بالقفل الحصري (Mutex) عبر طابور الوعود (Promise Queue): تسلسل عمليات الكتابة في IDBFS (معالجتها واحدة تلو الأخرى بالترتيب) وإدخال آلية قفل تجعل المعاملة التالية تنتظر حتى تكتمل المزامنة الجارية.
+• قاطع دائرة مع تراجع أسي (Exponential Backoff): تمديد فترة إعادة المحاولة بشكل أسي عند اكتشاف أخطاء متتالية (500ms ← 1s ← 2s ← 4s...)، وقطع الاتصال مؤقتاً بعد عدد معين من الإخفاقات لمنع تجمد المتصفح.
+
+4. IndexedDB Mutex Lock Control & Network Circuit Breaker (English)
+
+
+🔴 Challenge (Before)
+
+• Storage Sync Contention (Deadlock): When high-frequency real-time battle logs and state updates were written rapidly, asynchronous FS.syncfs transactions fired concurrently and collided, freezing the main thread.
+• Unbounded Retry Loop: Upon encountering a server-side network_error, analytics and API requests retried continuously with zero delay, exhausting browser RAM and CPU resources.
+
+🟢 Remediation Approach (After)
+
+• Promise-Queue Mutex Lock Control: Serialized IDBFS write operations (processing them strictly one at a time) via a mutex lock so pending transactions wait until the active sync completes.
+• Circuit Breaker with Exponential Backoff: Exponentially increased retry intervals upon consecutive failures (500ms → 1s → 2s → 4s...) and temporarily tripped the circuit open after a failure threshold to prevent browser freezes.
+
+
+4. IndexedDBの排他ロック制御と通信サーキットブレーカー
+
+
+🔴 課題 (Before)
+
+• ストレージ同期の競合（デッドロック）: リアルタイムの戦闘ログや状態データが短時間に大量書き込みされると、FS.syncfs の非同期トランザクションが多重起動して衝突し、メインスレッドが凍結（フリーズ）していました。
+• リトライ暴走（無限ループ）: サーバー側の通信エラー（network_error）発生時に、分析通信やAPIリクエストが待機時間なしで連続リトライを繰り返し、ブラウザのメモリとCPUを枯渇させていました。
+
+🟢 解消アプローチ (After)
+
+• Promiseキューによる排他ロック（Mutex）制御: IDBFS の書き込みリクエストを直列化（1つずつ順番に処理）し、進行中の同期が完了するまで次のトランザクションを待機させるロック機構を導入しました。
+• 指数バックオフ付きサーキットブレーカー: 連続エラー検知時に再試行間隔を指数関数的に延長（500ms → 1s → 2s → 4s...）し、一定回数失敗した場合は一時的に通信を遮断してブラウザのフリーズを防止します。
+
+```javascript
+// [AR] مثال على تسلسل مزامنة IndexedDB باستخدام القفل الحصري (Mutex)
+// [EN] Example of serializing IndexedDB sync via Mutex lock
+// [JA] 排他ロック（Mutex）によるIndexedDB同期の直列化イメージ
+class StorageMutex {
+  constructor() {
+    this.queue = Promise.resolve();
+  }
+  run(task) {
+    const next = this.queue.then(() => task());
+    this.queue = next.catch(() => {});
+    return next;
+  }
+}
+
+// [AR] مثال على قاطع الدائرة مع التراجع الأسي (Exponential Backoff)
+// [EN] Example of Circuit Breaker with Exponential Backoff
+// [JA] 指数バックオフ付きサーキットブレーカーのイメージ
+class NetworkCircuitBreaker {
+  constructor(maxFailures = 3, baseDelay = 500) {
+    this.failures = 0;
+    this.maxFailures = maxFailures;
+    this.baseDelay = baseDelay;
+    this.openUntil = 0;
+  }
+  async execute(requestFn) {
+    if (Date.now() < this.openUntil) {
+      throw new Error("Circuit open: skipping request to prevent loop");
+    }
+    try {
+      const res = await requestFn();
+      this.failures = 0;
+      return res;
+    } catch (err) {
+      this.failures++;
+      const delay = this.baseDelay * Math.pow(2, this.failures);
+      if (this.failures >= this.maxFailures) {
+        this.openUntil = Date.now() + delay;
+      }
+      throw err;
+    }
+  }
+}
+
+```
+
+---
+
+
+٥. عزل تخزين جلسة المصادقة عن ذاكرة التخزين المؤقت للأصول (Arabic)
+
+
+🔴 التحدي (Before)
+
+• الاقتران الوثيق بين المصادقة والبيانات المؤقتة: تم تخزين رموز جلسة تسجيل الدخول (AccessToken / SessionID) وبيانات الأصول القابلة للتلف داخل نفس مساحة تخزين المتصفح (IndexedDB / LocalStorage).
+• حلقة إعادة المصادقة القسرية: عند تلف البيانات المؤقتة بسبب خطأ في الشبكة، يؤدي مسح تخزين الموقع لإصلاح التجمد إلى مسح جلسة المصادقة أيضاً، مما يفرض تسجيل الخروج وإعادة الربط عبر رمز الاستجابة السريعة (QR) في كل مرة.
+
+🟢 حل المعالجة (After)
+
+• فصل مساحات التخزين (Storage Namespace Isolation): تقسيم التخزين إلى نطاقين مستقلين تماماً؛ نطاق مخصص لبيانات الاعتماد (Auth Vault) ونطاق منفصل لذاكرة التخزين المؤقت للأصول (Asset Cache).
+• التعافي الذاتي الآمن: عند اكتشاف تلف في بيانات اللعبة، يتم مسح نطاق الأصول (Asset Cache) فقط برمجياً مع الحفاظ على جلسة المصادقة سليمة بنسبة 100% دون الحاجة لتسجيل الدخول مجدداً.
+
+5. Decoupling Authentication Session Storage from Asset Cache (English)
+
+
+🔴 Challenge (Before)
+
+• Tight Coupling of Auth & Cache: Login session tokens (AccessToken / SessionID) and volatile game asset caches were co-located inside the same browser storage (IndexedDB / LocalStorage).
+• Forced Re-Authentication Loop: Whenever network errors corrupted the asset cache, clearing site storage to recover from a freeze also wiped the login session—forcing users to log out and re-authenticate via mobile QR code every single time.
+
+🟢 Remediation Approach (After)
+
+• Storage Namespace Isolation: Split browser persistence into two completely isolated namespaces: a dedicated Auth Vault for session tokens and a disposable Asset Cache for game binaries.
+• Non-Destructive Self-Healing: Upon detecting cache corruption or a load stall, the launcher purges only the Asset Cache namespace while preserving the Auth Vault intact, eliminating forced logouts.
+
+5. 認証セッションストレージとアセットキャッシュの完全分離 (Japanese)
+
+
+🔴 課題 (Before)
+
+• 認証情報とキャッシュの密結合: ログインセッション（AccessToken / SessionID）と破損しやすいアセットキャッシュが、同じブラウザストレージ領域（IndexedDB / LocalStorage）に混在していました。
+• 強制ログアウト・再認証ループ: 通信エラーでキャッシュが破損した際、フリーズ復旧のためにサイトストレージを消去すると認証キーまで消えてしまい、毎回スマホでのQR再認証を強いられる構造になっていました。
+
+🟢 解消アプローチ (After)
+
+• ストレージ名前空間（Namespace）の完全分離: 認証トークン専用の保護領域（Auth Vault）と、破棄可能なゲームデータ領域（Asset Cache）を別々のストレージ領域に分離しました。
+• 非破壊的な自動自己修復（Self-Healing）: ロード停止やキャッシュ破損を検知した際、認証領域には一切触れずに Asset Cache だけを自動パージ（再構築）する仕組みを導入し、ログイン状態を維持したまま復旧できるようにしました。
+
+```javascript
+// [AR] مثال على عزل تخزين المصادقة عن ذاكرة التخزين المؤقت
+// [EN] Example of isolating Auth Vault from disposable Asset Cache
+// [JA] 認証セッション領域と破棄可能なアセットキャッシュの完全分離イメージ
+class IsolatedStorageManager {
+  constructor(authKey = "sovereign_auth_vault", cachePrefix = "webgl_asset_cache_") {
+    this.authKey = authKey;
+    this.cachePrefix = cachePrefix;
+  }
+
+  // 認証トークンは独立した保護領域で保持（キャッシュ消去の影響を受けない）
+  saveAuthSession(tokenData) {
+    sessionStorage.setItem(this.authKey, JSON.stringify(tokenData));
+  }
+
+  // 破損時はアセットキャッシュの名前空間のみを安全にパージ
+  async purgeCorruptedCacheOnly() {
+    const cacheKeys = await caches.keys();
+    await Promise.all(
+      cacheKeys
+        .filter(key => key.startsWith(this.cachePrefix))
+        .map(key => caches.delete(key))
+    );
+    Object.keys(localStorage)
+      .filter(key => key.startsWith(this.cachePrefix))
+      .forEach(key => localStorage.removeItem(key));
+  }
+}
+
+
+```
+
+---
+
 📈 النتائج المتوقعة (Expected Benefits)
 
 1. تقليل استهلاك الذاكرة العشوائية: يحد من ذروة الذاكرة المؤقتة بنسبة 50% تقريباً أثناء نشر الأصول الكبيرة.
