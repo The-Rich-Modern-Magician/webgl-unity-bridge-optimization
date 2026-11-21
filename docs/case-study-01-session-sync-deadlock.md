@@ -1,49 +1,68 @@
 
 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
 
-<img width="1200" height="628" alt="rectangle_large_type_2_9ce6a3087fdffd3a888e1f5a3d1f2ead" src="https://github.com/user-attachments/assets/79e75c86-d623-4eb1-a64e-dc38add686ab" />
-<img width="1280" height="671" alt="rectangle_large_type_2_1a9961b78d4191a39b03a55709e84b02" src="https://github.com/user-attachments/assets/5402a8ad-c994-490d-a566-92bb25d445d2" />
-<img width="813" height="509" alt="1728270540-BMtz2ym1JxGOesfTXPcjrbqL" src="https://github.com/user-attachments/assets/7914336c-0933-4d44-be90-b5879f93d5c5" />
-<img width="813" height="509" alt="1728270540-10izvTUdDrkYfnIjF2H9glEX" src="https://github.com/user-attachments/assets/bd1bcb2b-00c6-44b0-88d5-c79912c88aed" />
+<div align="center">
+
+بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+
+<table>
+  <tr>
+    <td><img width="600" alt="rectangle_large_type_2_9ce6a3087fdffd3a888e1f5a3d1f2ead" src="https://github.com/user-attachments/assets/79e75c86-d623-4eb1-a64e-dc38add686ab" /></td>
+    <td><img width="600" alt="rectangle_large_type_2_1a9961b78d4191a39b03a55709e84b02" src="https://github.com/user-attachments/assets/5402a8ad-c994-490d-a566-92bb25d445d2" /></td>
+  </tr>
+  <tr>
+    <td><img width="600" alt="1728270540-BMtz2ym1JxGOesfTXPcjrbqL" src="https://github.com/user-attachments/assets/7914336c-0933-4d44-be90-b5879f93d5c5" /></td>
+    <td><img width="600" alt="1728270540-10izvTUdDrkYfnIjF2H9glEX" src="• https://github.com/user-attachments/assets/bd1bcb2b-00c6-44b0-88d5-c79912c88aed
+" /></td>
+  </tr>
+</table>
+
+</div>
 
 
 ---
 
-دراسة حالة #01: تحليل الجمود التزامني في الوقت الفعلي وعاصفة إعادة المحاولة في ألعاب WebGL التجارية
+# دراسة حالة #01: تحليل الجمود التزامني في الوقت الفعلي وعاصفة إعادة المحاولة في ألعاب WebGL التجارية
 
-Case Study #01: Analysis of Real-Time Synchronization Deadlock and Retry Storm in Commercial WebGL Games
+## Case Study #01: Analysis of Real-Time Synchronization Deadlock and Retry Storm in Commercial WebGL Games
 
-Case Study #01: 商用WebGLゲームにおけるリアルタイム同期デッドロックとリトライ暴走の解析
+## Case Study #01: 商用WebGLゲームにおけるリアルタイム同期デッドロックとリトライ暴走の解析
 
 
 ---
 
-🇸🇦 🇦🇪 🇶🇦 🇧🇭 🇴🇲 ⸺ Arabic Version (العربية - لغة تقنية فصحى)
+<div dir="rtl">
+
+### 🇸🇦 🇦🇪 🇶🇦 🇧🇭 🇴🇲 ⸺ Arabic Version (العربية - لغة تقنية فصحى)
 
 
-١. الملخص التنفيذي (Executive Summary)
+#### ١. الملخص التنفيذي (Executive Summary)
 
 تستعرض دراسة الحالة التقنية هذه تحليلاً شاملاً لعطل حرج أدى إلى تعذر تسجيل الدخول وتجمد الخيط الرئيسي (Main Thread) في تطبيق تجاري مبني على محرك Unity WebGL / Emscripten فور إطلاق حدث تنافسي ضخم (PvP) في الوقت الفعلي. ومن خلال فحص سجلات الشبكة في أدوات المطورين (DevTools)، وبيانات مراقبة الأخطاء (Sentry)، وبنية جسر JavaScript-to-Wasm، تم تحديد سلسلة إخفاقات من أربع مراحل ناتجة عن غياب التحكم في التزامن والاقتران الوثيق بين مساحات التخزين.
 
-🇬🇧 English Version
+</div>
+
+### 🇬🇧 English Version
 
 
-1. Executive Summary
+#### 1. Executive Summary
 
 This technical case study analyzes a critical login lockout and main-thread freeze observed in a commercial Unity WebGL / Emscripten application immediately following the launch of a large-scale real-time PvP event. By inspecting browser DevTools network traces, Sentry error telemetry, and the JavaScript-to-Wasm bridge architecture, we isolated a four-stage cascading failure caused by missing concurrency controls and tightly coupled storage namespaces.
 
-🇯🇵 日本語版 (Japanese)
+### 🇯🇵 日本語版 (Japanese)
 
 
-1. 概要 (Executive Summary)
+#### 1. 概要 (Executive Summary)
 
 本レポートは、大規模なリアルタイムPvPイベントの開始直後に発生した商用WebGL（Unity WebGL / Emscripten）アプリケーションのログイン不能および画面凍結（フリーズ）障害について、ブラウザの開発者ツール（DevTools）から採取した通信・エラー監視ログおよびJSブリッジ層の構造を解析した技術ケーススタディです。
 
 
 ---
 
+<div dir="rtl">
 
-٢. تسلسل آلية الفشل (Failure Chain Breakdown)
+
+#### ٢. تسلسل آلية الفشل (Failure Chain Breakdown)
 
 1. المرحلة الأولى: رفض الاتصال من جانب الخادم عند إطلاق الحدث (network_error)
 	• بعد دقيقة واحدة و50 ثانية فقط من الإطلاق المجدول للحدث (02:00 UTC / 11:00 JST؛ الطابع الزمني 1795226510.518)، سجل نظام مراقبة الأخطاء من جانب العميل (sentry.javascript.browser/10.47.0) حدث تجاهل حرج بسبب خطأ في الشبكة (network_error).
@@ -58,8 +77,10 @@ This technical case study analyzes a critical login lockout and main-thread free
 	• نظراً لأن ذاكرة التخزين المؤقت للأصول المتطايرة ورموز جلسة المصادقة تشترك في نفس طبقة التخزين الدائم للمتصفح (LocalStorage / IndexedDB)، فإن مسح تخزين الموقع لتطهير ملفات التخزين المؤقت التالفة يؤدي أيضاً إلى مسح جلسة تسجيل الدخول النشطة.
 	• ونتيجة لذلك، فرضت كل عملية استرداد عبر مسح التخزين المؤقت تسجيل خروج كامل وتطلبت إعادة مصادقة خارجية عبر رمز الاستجابة السريعة (QR) من الهاتف المحمول.
 
+</div>
 
-2. Failure Chain Breakdown
+
+#### 2. Failure Chain Breakdown
 
 1. Phase 1: Server-Side Connection Rejection at Event Launch (network_error)
 	• Exactly 1 minute and 50 seconds after the scheduled event launch (02:00 UTC / 11:00 JST; Unix Timestamp 1795226510.518), the client-side error monitor (sentry.javascript.browser/10.47.0) recorded a critical network_error discard event.
@@ -75,7 +96,7 @@ This technical case study analyzes a critical login lockout and main-thread free
 	• Consequently, every cache-clearing recovery forced a complete logout and required external mobile QR re-authentication.
 
 
-2. 障害の連鎖メカニズム (Failure Chain Breakdown)
+#### 2. 障害の連鎖メカニズム (Failure Chain Breakdown)
 
 1. フェーズ1：イベント開始時の接続拒絶 (network_error)
 	• イベント定時開始（02:00 UTC / 11:00 JST）のわずか1分50秒後（Unix Timestamp: 1795226510.518）、クライアント側のエラー監視システム（sentry.javascript.browser/10.47.0）が {"reason":"network_error","category":"error","quantity":1} を記録。
@@ -93,15 +114,21 @@ This technical case study analyzes a critical login lockout and main-thread free
 
 ---
 
+<div dir="rtl">
 
-٣. الأدلة التشخيصية المرصودة (Diagnostic Evidence)
+
+#### ٣. الأدلة التشخيصية المرصودة (Diagnostic Evidence)
 
 • تم رصد فشل الاتصال الحرج من جانب العميل عبر حزمة تقرير العميل (client_report) في نظام Sentry عند الطابع الزمني 1795226510.518، حيث تم تسجيل فقدان الحدث بسبب خطأ في الشبكة (network_error) من فئة الأخطاء الحرجة (error) بمقدار حدث واحد (quantity: 1) فور بدء الحدث، متبوعاً بأكثر من 3,900 طلب قياس محظور ومكرر.
 
-### 3. Diagnostic Evidence
+</div>
+
+#### 3. Diagnostic Evidence
+
 * A critical client-side connection failure was observed via a Sentry `client_report` payload at Unix timestamp `1795226510.518`, recording a discarded event under the critical `error` category caused by a `network_error` (`quantity: 1`) immediately upon event launch, followed by over 3,900 blocked and repeated telemetry retry requests.
 
-### 3. 観測された診断ログ (Diagnostic Evidence)
+#### 3. 観測された診断ログ (Diagnostic Evidence)
+
 * タイムスタンプ `1795226510.518` において、Sentryのクライアントレポート（`client_report`）ペイロードを通じた重大なクライアント側通信エラーが観測され、イベント開始直後に重大エラー（`error`）カテゴリにおけるネットワークエラー（`network_error` / `quantity: 1`）の発生と、それに続く3,900件以上のブロックされたテレメトリ再試行リクエストの暴走が記録されました。
 
 
@@ -123,22 +150,26 @@ This technical case study analyzes a critical login lockout and main-thread free
 
 ---
 
+<div dir="rtl">
 
-٤. الحلول المعمارية والمعالجة (Architectural Remediation)
+
+#### ٤. الحلول المعمارية والمعالجة (Architectural Remediation)
 
 • العزل الصارم لمساحات التخزين: فصل رموز المصادقة (Auth Vault) عن ذاكرة التخزين المؤقت للأصول الثنائية القابلة للتخلص منها بحيث لا يؤدي تطهير ذاكرة التخزين المؤقت إلى إبطال جلسات تسجيل الدخول النشطة أبداً.
 • تسلسل كتابة IDBFS عبر القفل الحصري (Mutex): وضع عمليات FS.syncfs في طابور تسلسلي عبر قفل Promise لمنع تصادم معاملات IndexedDB أثناء المزامنة المكثفة للحالة.
 • قاطع الدائرة مع التراجع الأسي: فرض تأخيرات إعادة محاولة أسية عند اكتشاف استجابات network_error وفتح القاطع مؤقتاً بعد تجاوز حد الفشل لحماية خيط واجهة المستخدم من عواصف إعادة المحاولة.
 
+</div>
 
-### 4. Architectural Remediation
+
+#### 4. Architectural Remediation
 
 • Strict Storage Namespace Isolation: Separate authentication tokens (Auth Vault) from disposable binary asset caches so cache purges never invalidate active login sessions.
 • Serialized IDBFS Write Mutex: Queue FS.syncfs operations sequentially via a Promise mutex to prevent IndexedDB transaction collisions during heavy state synchronization.
 • Circuit Breaker with Exponential Backoff: Enforce exponential retry delays upon detecting network_error responses and trip the circuit open after a threshold to protect the UI thread from retry storms.
 
 
-4. アーキテクチャ上の解決策 (Architectural Remediation)
+#### 4. アーキテクチャ上の解決策 (Architectural Remediation)
 
 • ストレージ名前空間の完全分離: 認証トークン専用の保護領域（Auth Vault）と、破棄可能なアセットキャッシュ領域を分離し、キャッシュパージ時にログイン状態を維持する。
 • IDBFS書き込みの排他ロック（Mutex）化: FS.syncfs の同時多重実行をPromiseキューで直列化し、大量ログ受信時のトランザクション衝突を防ぐ。
