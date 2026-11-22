@@ -1,3 +1,12 @@
+- [Case Study #01: Real-Time Sync Deadlock & Retry Storm in Commercial WebGL](./docs/case-study-01-session-sync-deadlock.md)
+
+📝 **Read on DEV Community (Article & Discussion):**
+[Engineered in Japan GCC: Optimizing Unity WebGL / Emscripten JS Bridge (Zero-Copy FS & Branchless Lookup)](https://dev.to/therichmodernmagician/engineered-in-japan-gcc-optimizing-unity-webgl-emscripten-js-bridge-zero-copy-fs-branchless-4n32)
+
+🔗 **Official Hub & Sovereign Engine IP:**
+[The Rich Modern Magician Official | Linktree](https://linktr.ee)
+
+
 # WebGL - Unity JS Bridge Memory & Performance Optimization Report
 
 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
@@ -512,3 +521,11 @@ Production-ready source codes, full integration frameworks, and bespoke consulti
 DM: TheRichModernMagician@tuta.com
 
 اللَّهُ أَكْبَرُ
+
+- [Case Study #01: Real-Time Sync Deadlock & Retry Storm in Commercial WebGL](./docs/case-study-01-session-sync-deadlock.md)
+
+📝 **Read on DEV Community (Article & Discussion):**
+[Engineered in Japan GCC: Optimizing Unity WebGL / Emscripten JS Bridge (Zero-Copy FS & Branchless Lookup)](https://dev.to/therichmodernmagician/engineered-in-japan-gcc-optimizing-unity-webgl-emscripten-js-bridge-zero-copy-fs-branchless-4n32)
+
+🔗 **Official Hub & Sovereign Engine IP:**
+[The Rich Modern Magician Official | Linktree](https://linktr.ee)
