@@ -1,3 +1,16 @@
+
+---
+
+📝 **Read on DEV Community (Article & Discussion):**
+[Case Study #01: Real-Time Sync Deadlock & Retry Storm in Commercial Unity WebGL (Analysis & Remediation)](https://dev.to/therichmodernmagician/case-study-01-real-time-sync-deadlock-retry-storm-in-commercial-unity-webgl-analysis--5dm3)
+
+🔗 **Official Hub & Sovereign Engine IP:**
+[The Rich Modern Magician Official | Linktree](https://linktr.ee)
+
+---
+
+
+
 <div align="center">
 
 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
@@ -169,3 +182,14 @@ This technical case study analyzes a critical login lockout and main-thread free
 <div dir="rtl">
 اللَّهُ أَكْبَرُ
 </div>
+
+
+---
+
+📝 **Read on DEV Community (Article & Discussion):**
+[Case Study #01: Real-Time Sync Deadlock & Retry Storm in Commercial Unity WebGL (Analysis & Remediation)](https://dev.to/therichmodernmagician/case-study-01-real-time-sync-deadlock-retry-storm-in-commercial-unity-webgl-analysis--5dm3)
+
+🔗 **Official Hub & Sovereign Engine IP:**
+[The Rich Modern Magician Official | Linktree](https://linktr.ee)
+
+---
