@@ -158,8 +158,8 @@ function optimizedDeviceMatch(newDevice, oldDevices) {
 
 🔴 التحدي (Before)
 
-• عبر عمليات متعددة لنظام الملفات الافتراضي (mkdir ،rmdir ،unlink ،إلخ)، تكرر نسخ ولصق نفس منطق مزامنة تخزين IndexedDB (كتابة صلبة مكررة).
-• انتشرت عمليات التحقق المتكررة من الوجود داخل روتينات إشعار النجاح/الفشل المرسلة إلى Unity.
+- عبر عمليات متعددة لنظام الملفات الافتراضي (mkdir ،rmdir ،unlink ،إلخ)، تكرر نسخ ولصق نفس منطق مزامنة تخزين IndexedDB (كتابة صلبة مكررة).
+- انتشرت عمليات التحقق المتكررة من الوجود داخل روتينات إشعار النجاح/الفشل المرسلة إلى Unity.
 
 🟢 حل المعالجة (After)
 
@@ -215,11 +215,11 @@ const syncWrapper = (originalFunc) => (...args) => {
 ---
 
 
-• [AR] لتجنب المشاكل الناتجة عن اختلاف الهياكل الداخلية في بيئات التشغيل التجارية، نقوم بدمج جميع عمليات التحقق وتوسيع نطاق المصفوفة ليشمل روتينات المزامنة المتقدمة لجميع العمليات الحركية لنظام الملفات، مع ضمان اتجاه القراءة من اليسار إلى اليمين (LTR) لمنع أي تداخل في التفسير البرمجي.
+- [AR] لتجنب المشاكل الناتجة عن اختلاف الهياكل الداخلية في بيئات التشغيل التجارية، نقوم بدمج جميع عمليات التحقق وتوسيع نطاق المصفوفة ليشمل روتينات المزامنة المتقدمة لجميع العمليات الحركية لنظام الملفات، مع ضمان اتجاه القراءة من اليسار إلى اليمين (LTR) لمنع أي تداخل في التفسير البرمجي.
 
-• [EN] To mitigate discrepancies caused by varying internal structures across different environments, we unify existence checks and expand the array boundaries to map advanced synchronization across all file operations, enforcing a strict Left-to-Right (LTR) layout to prevent architectural regressions.
+- [EN] To mitigate discrepancies caused by varying internal structures across different environments, we unify existence checks and expand the array boundaries to map advanced synchronization across all file operations, enforcing a strict Left-to-Right (LTR) layout to prevent architectural regressions.
 
-• [JA] 商用システムごとの内部構造の差異による不具合を防止するため、存在チェックを統合。すべてのファイルシステム操作にわたって高度な同期ルーチンを一括バインドできるように配列の境界を拡張し、コードの解釈エラーを防ぐ完全なLTR仕様で実装を定義します。
+- [JA] 商用システムごとの内部構造の差異による不具合を防止するため、存在チェックを統合。すべてのファイルシステム操作にわたって高度な同期ルーチンを一括バインドできるように配列の境界を拡張し、コードの解釈エラーを防ぐ完全なLTR仕様で実装を定義します。
 
 ```javascript
 // [AR] الكود البرمجي المحسّن لربط عمليات نظام الملفات (راجع المستندات المرجعية للاطلاع على الكود الكامل)
@@ -250,26 +250,26 @@ const syncWrapper = (originalFunc) => {
 
 #### 🔴 التحدي (Before)
 
-• تعارض مزامنة التخزين (Deadlock): عند كتابة سجلات المعارك الفورية وبيانات الحالة بكثافة في وقت قصير، كانت معاملات FS.syncfs غير المتزامنة تعمل بشكل متوازي وتتعارض، مما يؤدي إلى تجمد الخيط الرئيسي (Main Thread).
-• حلقة إعادة المحاولة اللانهائية: عند حدوث خطأ في الاتصال بالخادم (network_error)، كانت طلبات التحليلات وواجهة برمجة التطبيقات (API) تعيد المحاولة باستمرار دون فترة انتظار، مما يستنزف ذاكرة المتصفح ووحدة المعالجة المركزية (CPU).
+- تعارض مزامنة التخزين (Deadlock): عند كتابة سجلات المعارك الفورية وبيانات الحالة بكثافة في وقت قصير، كانت معاملات FS.syncfs غير المتزامنة تعمل بشكل متوازي وتتعارض، مما يؤدي إلى تجمد الخيط الرئيسي (Main Thread).
+- حلقة إعادة المحاولة اللانهائية: عند حدوث خطأ في الاتصال بالخادم (network_error)، كانت طلبات التحليلات وواجهة برمجة التطبيقات (API) تعيد المحاولة باستمرار دون فترة انتظار، مما يستنزف ذاكرة المتصفح ووحدة المعالجة المركزية (CPU).
 
 #### 🟢 حل المعالجة (After)
 
-• التحكم بالقفل الحصري (Mutex) عبر طابور الوعود (Promise Queue): تسلسل عمليات الكتابة في IDBFS (معالجتها واحدة تلو الأخرى بالترتيب) وإدخال آلية قفل تجعل المعاملة التالية تنتظر حتى تكتمل المزامنة الجارية.
-• قاطع دائرة مع تراجع أسي (Exponential Backoff): تمديد فترة إعادة المحاولة بشكل أسي عند اكتشاف أخطاء متتالية (500ms ← 1s ← 2s ← 4s...)، وقطع الاتصال مؤقتاً بعد عدد معين من الإخفاقات لمنع تجمد المتصفح.
+- التحكم بالقفل الحصري (Mutex) عبر طابور الوعود (Promise Queue): تسلسل عمليات الكتابة في IDBFS (معالجتها واحدة تلو الأخرى بالترتيب) وإدخال آلية قفل تجعل المعاملة التالية تنتظر حتى تكتمل المزامنة الجارية.
+- قاطع دائرة مع تراجع أسي (Exponential Backoff): تمديد فترة إعادة المحاولة بشكل أسي عند اكتشاف أخطاء متتالية (500ms ← 1s ← 2s ← 4s...)، وقطع الاتصال مؤقتاً بعد عدد معين من الإخفاقات لمنع تجمد المتصفح.
 
 #### 4. IndexedDB Mutex Lock Control & Network Circuit Breaker (English)
 
 
 #### 🔴 Challenge (Before)
 
-• Storage Sync Contention (Deadlock): When high-frequency real-time battle logs and state updates were written rapidly, asynchronous FS.syncfs transactions fired concurrently and collided, freezing the main thread.
-• Unbounded Retry Loop: Upon encountering a server-side network_error, analytics and API requests retried continuously with zero delay, exhausting browser RAM and CPU resources.
+- Storage Sync Contention (Deadlock): When high-frequency real-time battle logs and state updates were written rapidly, asynchronous FS.syncfs transactions fired concurrently and collided, freezing the main thread.
+- Unbounded Retry Loop: Upon encountering a server-side network_error, analytics and API requests retried continuously with zero delay, exhausting browser RAM and CPU resources.
 
 #### 🟢 Remediation Approach (After)
 
-• Promise-Queue Mutex Lock Control: Serialized IDBFS write operations (processing them strictly one at a time) via a mutex lock so pending transactions wait until the active sync completes.
-• Circuit Breaker with Exponential Backoff: Exponentially increased retry intervals upon consecutive failures (500ms → 1s → 2s → 4s...) and temporarily tripped the circuit open after a failure threshold to prevent browser freezes.
+- Promise-Queue Mutex Lock Control: Serialized IDBFS write operations (processing them strictly one at a time) via a mutex lock so pending transactions wait until the active sync completes.
+- Circuit Breaker with Exponential Backoff: Exponentially increased retry intervals upon consecutive failures (500ms → 1s → 2s → 4s...) and temporarily tripped the circuit open after a failure threshold to prevent browser freezes.
 
 
 #### 4. IndexedDBの排他ロック制御と通信サーキットブレーカー
@@ -277,13 +277,13 @@ const syncWrapper = (originalFunc) => {
 
 #### 🔴 課題 (Before)
 
-• ストレージ同期の競合（デッドロック）: リアルタイムの戦闘ログや状態データが短時間に大量書き込みされると、FS.syncfs の非同期トランザクションが多重起動して衝突し、メインスレッドが凍結（フリーズ）していました。
-• リトライ暴走（無限ループ）: サーバー側の通信エラー（network_error）発生時に、分析通信やAPIリクエストが待機時間なしで連続リトライを繰り返し、ブラウザのメモリとCPUを枯渇させていました。
+- ストレージ同期の競合（デッドロック）: リアルタイムの戦闘ログや状態データが短時間に大量書き込みされると、FS.syncfs の非同期トランザクションが多重起動して衝突し、メインスレッドが凍結（フリーズ）していました。
+- リトライ暴走（無限ループ）: サーバー側の通信エラー（network_error）発生時に、分析通信やAPIリクエストが待機時間なしで連続リトライを繰り返し、ブラウザのメモリとCPUを枯渇させていました。
 
 #### 🟢 解消アプローチ (After)
 
-• Promiseキューによる排他ロック（Mutex）制御: IDBFS の書き込みリクエストを直列化（1つずつ順番に処理）し、進行中の同期が完了するまで次のトランザクションを待機させるロック機構を導入しました。
-• 指数バックオフ付きサーキットブレーカー: 連続エラー検知時に再試行間隔を指数関数的に延長（500ms → 1s → 2s → 4s...）し、一定回数失敗した場合は一時的に通信を遮断してブラウザのフリーズを防止します。
+- Promiseキューによる排他ロック（Mutex）制御: IDBFS の書き込みリクエストを直列化（1つずつ順番に処理）し、進行中の同期が完了するまで次のトランザクションを待機させるロック機構を導入しました。
+- 指数バックオフ付きサーキットブレーカー: 連続エラー検知時に再試行間隔を指数関数的に延長（500ms → 1s → 2s → 4s...）し、一定回数失敗した場合は一時的に通信を遮断してブラウザのフリーズを防止します。
 
 ```javascript
 // [AR] مثال على تسلسل مزامنة IndexedDB باستخدام القفل الحصري (Mutex)
@@ -339,39 +339,39 @@ class NetworkCircuitBreaker {
 
 #### 🔴 التحدي (Before)
 
-• الاقتران الوثيق بين المصادقة والبيانات المؤقتة: تم تخزين رموز جلسة تسجيل الدخول (AccessToken / SessionID) وبيانات الأصول القابلة للتلف داخل نفس مساحة تخزين المتصفح (IndexedDB / LocalStorage).
-• حلقة إعادة المصادقة القسرية: عند تلف البيانات المؤقتة بسبب خطأ في الشبكة، يؤدي مسح تخزين الموقع لإصلاح التجمد إلى مسح جلسة المصادقة أيضاً، مما يفرض تسجيل الخروج وإعادة الربط عبر رمز الاستجابة السريعة (QR) في كل مرة.
+- الاقتران الوثيق بين المصادقة والبيانات المؤقتة: تم تخزين رموز جلسة تسجيل الدخول (AccessToken / SessionID) وبيانات الأصول القابلة للتلف داخل نفس مساحة تخزين المتصفح (IndexedDB / LocalStorage).
+- حلقة إعادة المصادقة القسرية: عند تلف البيانات المؤقتة بسبب خطأ في الشبكة، يؤدي مسح تخزين الموقع لإصلاح التجمد إلى مسح جلسة المصادقة أيضاً، مما يفرض تسجيل الخروج وإعادة الربط عبر رمز الاستجابة السريعة (QR) في كل مرة.
 
 #### 🟢 حل المعالجة (After)
 
-• فصل مساحات التخزين (Storage Namespace Isolation): تقسيم التخزين إلى نطاقين مستقلين تماماً؛ نطاق مخصص لبيانات الاعتماد (Auth Vault) ونطاق منفصل لذاكرة التخزين المؤقت للأصول (Asset Cache).
-• التعافي الذاتي الآمن: عند اكتشاف تلف في بيانات اللعبة، يتم مسح نطاق الأصول (Asset Cache) فقط برمجياً مع الحفاظ على جلسة المصادقة سليمة بنسبة 100% دون الحاجة لتسجيل الدخول مجدداً.
+- فصل مساحات التخزين (Storage Namespace Isolation): تقسيم التخزين إلى نطاقين مستقلين تماماً؛ نطاق مخصص لبيانات الاعتماد (Auth Vault) ونطاق منفصل لذاكرة التخزين المؤقت للأصول (Asset Cache).
+- التعافي الذاتي الآمن: عند اكتشاف تلف في بيانات اللعبة، يتم مسح نطاق الأصول (Asset Cache) فقط برمجياً مع الحفاظ على جلسة المصادقة سليمة بنسبة 100% دون الحاجة لتسجيل الدخول مجدداً.
 
 #### 5. Decoupling Authentication Session Storage from Asset Cache (English)
 
 
 #### 🔴 Challenge (Before)
 
-• Tight Coupling of Auth & Cache: Login session tokens (AccessToken / SessionID) and volatile game asset caches were co-located inside the same browser storage (IndexedDB / LocalStorage).
-• Forced Re-Authentication Loop: Whenever network errors corrupted the asset cache, clearing site storage to recover from a freeze also wiped the login session—forcing users to log out and re-authenticate via mobile QR code every single time.
+- Tight Coupling of Auth & Cache: Login session tokens (AccessToken / SessionID) and volatile game asset caches were co-located inside the same browser storage (IndexedDB / LocalStorage).
+- Forced Re-Authentication Loop: Whenever network errors corrupted the asset cache, clearing site storage to recover from a freeze also wiped the login session—forcing users to log out and re-authenticate via mobile QR code every single time.
 
 #### 🟢 Remediation Approach (After)
 
-• Storage Namespace Isolation: Split browser persistence into two completely isolated namespaces: a dedicated Auth Vault for session tokens and a disposable Asset Cache for game binaries.
-• Non-Destructive Self-Healing: Upon detecting cache corruption or a load stall, the launcher purges only the Asset Cache namespace while preserving the Auth Vault intact, eliminating forced logouts.
+- Storage Namespace Isolation: Split browser persistence into two completely isolated namespaces: a dedicated Auth Vault for session tokens and a disposable Asset Cache for game binaries.
+- Non-Destructive Self-Healing: Upon detecting cache corruption or a load stall, the launcher purges only the Asset Cache namespace while preserving the Auth Vault intact, eliminating forced logouts.
 
 #### 5. 認証セッションストレージとアセットキャッシュの完全分離 (Japanese)
 
 
 #### 🔴 課題 (Before)
 
-• 認証情報とキャッシュの密結合: ログインセッション（AccessToken / SessionID）と破損しやすいアセットキャッシュが、同じブラウザストレージ領域（IndexedDB / LocalStorage）に混在していました。
-• 強制ログアウト・再認証ループ: 通信エラーでキャッシュが破損した際、フリーズ復旧のためにサイトストレージを消去すると認証キーまで消えてしまい、毎回スマホでのQR再認証を強いられる構造になっていました。
+- 認証情報とキャッシュの密結合: ログインセッション（AccessToken / SessionID）と破損しやすいアセットキャッシュが、同じブラウザストレージ領域（IndexedDB / LocalStorage）に混在していました。
+- 強制ログアウト・再認証ループ: 通信エラーでキャッシュが破損した際、フリーズ復旧のためにサイトストレージを消去すると認証キーまで消えてしまい、毎回スマホでのQR再認証を強いられる構造になっていました。
 
 #### 🟢 解消アプローチ (After)
 
-• ストレージ名前空間（Namespace）の完全分離: 認証トークン専用の保護領域（Auth Vault）と、破棄可能なゲームデータ領域（Asset Cache）を別々のストレージ領域に分離しました。
-• 非破壊的な自動自己修復（Self-Healing）: ロード停止やキャッシュ破損を検知した際、認証領域には一切触れずに Asset Cache だけを自動パージ（再構築）する仕組みを導入し、ログイン状態を維持したまま復旧できるようにしました。
+- ストレージ名前空間（Namespace）の完全分離: 認証トークン専用の保護領域（Auth Vault）と、破棄可能なゲームデータ領域（Asset Cache）を別々のストレージ領域に分離しました。
+- 非破壊的な自動自己修復（Self-Healing）: ロード停止やキャッシュ破損を検知した際、認証領域には一切触れずに Asset Cache だけを自動パージ（再構築）する仕組みを導入し、ログイン状態を維持したまま復旧できるようにしました。
 
 ```javascript
 // [AR] مثال على عزل تخزين المصادقة عن ذاكرة التخزين المؤقت
@@ -443,13 +443,13 @@ class IsolatedStorageManager {
 ---
 
 
-• Arabic (العربية - LTR Mode): [التحليل العميق] الواقع الخفي لبنية WebGL الهيكلية التجارية
+- Arabic (العربية - LTR Mode): [التحليل العميق] الواقع الخفي لبنية WebGL الهيكلية التجارية
 تعاني المحركات الواجهية التجارية الكبيرة من احتكاك هيكلي بين Emscripten (Wasm) وإدارة الحالة الأصلية في JavaScript. وللتكيف مع مواصفات المتصفح الفريدة (مثل دورة الحياة وقواعد التخزين المتقلبة في iOS Safari)، يقوم المطورون بإضافة روتينات تجاوز محلية على طبقة الجسر. إن تقييم حلقات الشرط الديناميكية لآلاف الكائنات النشطة في كل إطار يؤدي إلى أخطاء فادحة في التنبؤ بالتفرع الشرطي (Branch Misprediction) وعبء ثقيل في تبديل السياق (Context-Switching)، مما يؤدي إلى تعطيل خيط الرسم الرئيسي تماماً.
 
-• English: [Deep Analysis] The Hidden Reality of Commercial WebGL Architecture
+- English: [Deep Analysis] The Hidden Reality of Commercial WebGL Architecture
 Commercial large-scale front-end engines often suffer from structural friction between Emscripten (Wasm) and native JavaScript state management. To adapt to unique browser specifications (e.g., iOS Safari's unique lifecycle and volatile storage rules), developers patch local override routines onto the bridge layer. Evaluating dynamic conditional loops for thousands of active instances every frame leads to heavy CPU branch mispredictions and severe context-switching overhead, stalling the main rendering thread.
 
-• 日本語: [詳細解析] 商用WebGLゲームにおける「隠された惨状」とアーキテクチャ上の致命的欠陥
+- 日本語: [詳細解析] 商用WebGLゲームにおける「隠された惨状」とアーキテクチャ上の致命的欠陥
 商用ゲームのコードを読み解くと、Emscripten（C++/Wasm）と生のJavaScriptの二重管理における構造的破綻が泥沼化しています。iOS Safari等のブラウザ固有の仕様（ストレージ制限やライフサイクル）に対応するため、ブリッジ側に場当たり的な上書きロジック（自動セーブパッチ等）を力技で継ぎ足した結果、同じ条件判定を繰り返す歪な多重構造が生まれています。また、デバイス変更（devicechange）検知時に全デバイスを総当たりでループ評価するため、短時間にイベントが頻発するとCPUの分岐予測ミスが多発し、メインスレッドが数フレーム完全にロック（ストール）される致命的な相性の悪さを抱えています。
 
 
@@ -470,11 +470,11 @@ Commercial large-scale front-end engines often suffer from structural friction b
 
 [解決策 A] JavaScriptブリッジ層の完全なバイパス（スキップ）化
 
-• Arabic (العربية - LTR Mode): لتحقيق أداء حقيقي منخفض المستوى (Metal-grade) داخل المتصفح، يجب إلغاء عبء التجريد لطبقة جسر JavaScript بشكل منهجي. يتم إعادة هندسة تفاعلات واجهة برمجة التطبيقات الأساسية (مثل إدخال وإخراج الملفات الثنائية وتعداد الأجهزة) لتنفيذ استدعاءات النظام المباشرة (System Calls) عبر ارتباطات C++ مخصصة ومترجمة داخل وحدة WebAssembly، مع مطابقة المصفوفات المحددة مباشرة في تخطيطات الذاكرة المشتركة (Shared-Memory) لتحقيق تكلفة تسلسل صفرية تماماً.
+- Arabic (العربية - LTR Mode): لتحقيق أداء حقيقي منخفض المستوى (Metal-grade) داخل المتصفح، يجب إلغاء عبء التجريد لطبقة جسر JavaScript بشكل منهجي. يتم إعادة هندسة تفاعلات واجهة برمجة التطبيقات الأساسية (مثل إدخال وإخراج الملفات الثنائية وتعداد الأجهزة) لتنفيذ استدعاءات النظام المباشرة (System Calls) عبر ارتباطات C++ مخصصة ومترجمة داخل وحدة WebAssembly، مع مطابقة المصفوفات المحددة مباشرة في تخطيطات الذاكرة المشتركة (Shared-Memory) لتحقيق تكلفة تسلسل صفرية تماماً.
 
-• English: To unlock genuine metal-grade performance within the browser, the runtime abstraction overhead of the JavaScript bridge must be systematically eliminated. The core API interactions (such as binary file I/O and device enumeration) are re-engineered to execute direct system calls via custom C++ bindings compiled inside the WebAssembly module, directly mapping typed arrays in shared-memory layouts to achieve absolute zero-serialization cost.
+- English: To unlock genuine metal-grade performance within the browser, the runtime abstraction overhead of the JavaScript bridge must be systematically eliminated. The core API interactions (such as binary file I/O and device enumeration) are re-engineered to execute direct system calls via custom C++ bindings compiled inside the WebAssembly module, directly mapping typed arrays in shared-memory layouts to achieve absolute zero-serialization cost.
 
-• 日本語: 本当にUnity WebGLのパフォーマンスを極限まで引き上げる場合、JavaScript側でラッパーを組んで綺麗に処理する設計すら排除し、「JSブリッジ自体を完全消去（スキップ）する」のが最強の答えです。ブラウザのWeb API（ファイル書き込みやデバイス列挙）をJavaScriptを経由させずに、C++（Wasm側）から直接システムコール（ポインタ直叩き）で呼び出す共有メモリ・バイパスアーキテクチャへ移行させます。これにより、JS/Wasm間のデータシリアライズ（変換）コストを文字通り「ゼロ」にします。
+- 日本語: 本当にUnity WebGLのパフォーマンスを極限まで引き上げる場合、JavaScript側でラッパーを組んで綺麗に処理する設計すら排除し、「JSブリッジ自体を完全消去（スキップ）する」のが最強の答えです。ブラウザのWeb API（ファイル書き込みやデバイス列挙）をJavaScriptを経由させずに、C++（Wasm側）から直接システムコール（ポインタ直叩き）で呼び出す共有メモリ・バイパスアーキテクチャへ移行させます。これにより、JS/Wasm間のデータシリアライズ（変換）コストを文字通り「ゼロ」にします。
 
 
 ---
@@ -486,21 +486,21 @@ Commercial large-scale front-end engines often suffer from structural friction b
 
 [解決策 B] ビットマスクによる「条件分岐の完全消去（Branchlessマトリックス）」
 
-• Arabic (العربية - LTR Mode): تظل تصفية المصفوفات القياسية أو عمليات البحث أثناء التشغيل غير خطية وأقل من المستوى المطلوب لخطوط رسم الأجهزة ذات المواصفات المنخفضة. يستبدل التصميم السيادي الأمثل مطابقات السلاسل أو المعرفات المتتالية بعلامات أعداد صحيحة ثابتة ومحددة بتطبيقات بتية (Bitwise). يتم تسطيح تقييمات الحالة إلى عمليات بتية رياضية أصلية (& و |)، وتنفيذها بفهرسة فورية. تضمن هذه البنية الهيكلية هيكلياً انعدام الخطأ في التنبؤ بالتفرع الشرطي تماماً، مما يحافظ على أعلى كفاءة لتدفق المعالج.
+- Arabic (العربية - LTR Mode): تظل تصفية المصفوفات القياسية أو عمليات البحث أثناء التشغيل غير خطية وأقل من المستوى المطلوب لخطوط رسم الأجهزة ذات المواصفات المنخفضة. يستبدل التصميم السيادي الأمثل مطابقات السلاسل أو المعرفات المتتالية بعلامات أعداد صحيحة ثابتة ومحددة بتطبيقات بتية (Bitwise). يتم تسطيح تقييمات الحالة إلى عمليات بتية رياضية أصلية (& و |)، وتنفيذها بفهرسة فورية. تضمن هذه البنية الهيكلية هيكلياً انعدام الخطأ في التنبؤ بالتفرع الشرطي تماماً، مما يحافظ على أعلى كفاءة لتدفق المعالج.
 
-• English: Standard array filtering or runtime lookups remain highly suboptimal for low-end device rendering pipelines. The optimal sovereign design replaces sequential string or ID matches with explicit static bitwise integer flags. State evaluations are flattened into native mathematical bitwise operations (& and |), executing with instantaneous indexing. This architecture structural guarantees zero branch mispredictions, maintaining peak pipeline efficiency.
+- English: Standard array filtering or runtime lookups remain highly suboptimal for low-end device rendering pipelines. The optimal sovereign design replaces sequential string or ID matches with explicit static bitwise integer flags. State evaluations are flattened into native mathematical bitwise operations (& and |), executing with instantaneous indexing. This architecture structural guarantees zero branch mispredictions, maintaining peak pipeline efficiency.
 
-• 日本語: 配列の .find() マッチングすら、本質的な速度を求めるなら生ぬるい処理です。本当の答えは、デバイスのステータス（ID一致、ラベル一致、グループ一致など）をすべて「ビットフラグ（数値）」に置き換え、CPUのビット演算（& や |）だけで一発で目的のインデックスを算出する平坦な数理マトリックスを裏で組むことです。これにより、CPUのパイプラインに一切の「迷い（分岐予測）」を与えず、ハードウェアの理論最高速（Branchless）でデバイスを特定します。
+- 日本語: 配列の .find() マッチングすら、本質的な速度を求めるなら生ぬるい処理です。本当の答えは、デバイスのステータス（ID一致、ラベル一致、グループ一致など）をすべて「ビットフラグ（数値）」に置き換え、CPUのビット演算（& や |）だけで一発で目的のインデックスを算出する平坦な数理マトリックスを裏で組むことです。これにより、CPUのパイプラインに一切の「迷い（分岐予測）」を与えず、ハードウェアの理論最高速（Branchless）でデバイスを特定します。
 
 
 ---
 💡 **إخلاء المسؤولية / 免責事項 / Disclaimer**
 
-• العربية: هذا التقرير هو دراسة بحثية تقنية تهدف إلى استكشاف أساليب تحسين أداء WebGL/Emscripten، ولا يشجع أو يروج لإعادة هندسة أو تعديل غير مصرح به لأي ألعاب تجارية محددة.
+- العربية: هذا التقرير هو دراسة بحثية تقنية تهدف إلى استكشاف أساليب تحسين أداء WebGL/Emscripten، ولا يشجع أو يروج لإعادة هندسة أو تعديل غير مصرح به لأي ألعاب تجارية محددة.
 
-• English: This report is a technical research document aimed at exploring WebGL/Emscripten optimization methodologies. It does not encourage, endorse, or promote reverse-engineering or unauthorized modification of any specific commercial titles.
+- English: This report is a technical research document aimed at exploring WebGL/Emscripten optimization methodologies. It does not encourage, endorse, or promote reverse-engineering or unauthorized modification of any specific commercial titles.
 
-• 日本語: 本レポートはWeb技術（WebGL/Emscripten）の最適化手法に関する学習・研究を目的としたものであり、特定のゲームタイトルのリバースエンジニアリングや不正な改変を推奨するものではありません。
+- 日本語: 本レポートはWeb技術（WebGL/Emscripten）の最適化手法に関する学習・研究を目的としたものであり、特定のゲームタイトルのリバースエンジニアリングや不正な改変を推奨するものではありません。
 
 
 ---
@@ -511,21 +511,21 @@ Commercial large-scale front-end engines often suffer from structural friction b
 
 🇸🇦 🇦🇪 🇶🇦 🇧🇭 🇴🇲 ⸺ Arabic
 
-• README.md: التقرير المعماري الرئيسي وتحسينات جسر JavaScript (النسخ الصفري، مصفوفات البت، القفل الحصري لـ IndexedDB، وعزل تخزين المصادقة).
-• docs/case-study-01-session-sync-deadlock.md: دراسة حالة واقعية لتحليل تعطل المزامنة الفورية وعواصف إعادة المحاولة (network_error) أثناء الأحداث التنافسية الضخمة.
-• benchmarks/bridge-optimization-benchmark.js: اختبارات قياس الأداء القابلة للتنفيذ لإثبات تقليل استهلاك الذاكرة وتسريع البحث ومنع تعارض المعاملات.
+- README.md: التقرير المعماري الرئيسي وتحسينات جسر JavaScript (النسخ الصفري، مصفوفات البت، القفل الحصري لـ IndexedDB، وعزل تخزين المصادقة).
+- docs/case-study-01-session-sync-deadlock.md: دراسة حالة واقعية لتحليل تعطل المزامنة الفورية وعواصف إعادة المحاولة (network_error) أثناء الأحداث التنافسية الضخمة.
+- benchmarks/bridge-optimization-benchmark.js: اختبارات قياس الأداء القابلة للتنفيذ لإثبات تقليل استهلاك الذاكرة وتسريع البحث ومنع تعارض المعاملات.
 
 🇬🇧 English
 
-• README.md: Core architectural optimization report for Unity WebGL JS Bridge (Zero-Copy Transfer, Bit-Mask Lookup, IDBFS Mutex Lock, and Auth Vault Isolation).
-• docs/case-study-01-session-sync-deadlock.md: Real-world production incident analysis covering real-time sync deadlocks, unbounded retry storms (network_error), and forced re-authentication loops during large-scale PvP events.
-• benchmarks/bridge-optimization-benchmark.js: Executable JavaScript benchmarks verifying RAM reduction, O(1) bit-mask lookup speed, and serialized IndexedDB transaction safety.
+- README.md: Core architectural optimization report for Unity WebGL JS Bridge (Zero-Copy Transfer, Bit-Mask Lookup, IDBFS Mutex Lock, and Auth Vault Isolation).
+- docs/case-study-01-session-sync-deadlock.md: Real-world production incident analysis covering real-time sync deadlocks, unbounded retry storms (network_error), and forced re-authentication loops during large-scale PvP events.
+- benchmarks/bridge-optimization-benchmark.js: Executable JavaScript benchmarks verifying RAM reduction, O(1) bit-mask lookup speed, and serialized IndexedDB transaction safety.
 
 🇯🇵 日本語 (Japanese)
 
-• README.md: Unity WebGL JSブリッジの主要アーキテクチャ最適化レポート（ゼロコピー転送、ビットマスク探索、IDBFS排他ロック制御、認証セッションとキャッシュの完全分離）。
-• docs/case-study-01-session-sync-deadlock.md: 大規模リアルタイムPvPイベント開始時に発生した通信エラー（network_error）・リトライ暴走・同期デッドロック・強制再認証ループの実戦障害解析ケーススタディ。
-• benchmarks/bridge-optimization-benchmark.js: メモリ削減効果・O(1)ビットマスク探索速度・IndexedDBトランザクション直列化の安全性を実測証明する検証用ベンチマークスクリプト。
+- README.md: Unity WebGL JSブリッジの主要アーキテクチャ最適化レポート（ゼロコピー転送、ビットマスク探索、IDBFS排他ロック制御、認証セッションとキャッシュの完全分離）。
+- docs/case-study-01-session-sync-deadlock.md: 大規模リアルタイムPvPイベント開始時に発生した通信エラー（network_error）・リトライ暴走・同期デッドロック・強制再認証ループの実戦障害解析ケーススタディ。
+- benchmarks/bridge-optimization-benchmark.js: メモリ削減効果・O(1)ビットマスク探索速度・IndexedDBトランザクション直列化の安全性を実測証明する検証用ベンチマークスクリプト。
 
 
 ---
