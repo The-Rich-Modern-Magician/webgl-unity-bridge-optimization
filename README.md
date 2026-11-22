@@ -8,6 +8,7 @@
 🔗 **Official Hub & Sovereign Engine IP:**
 [The Rich Modern Magician Official | Linktree](https://linktr.ee)
 
+---
 
 # WebGL - Unity JS Bridge Memory & Performance Optimization Report
 
@@ -462,8 +463,6 @@ Commercial large-scale front-end engines often suffer from structural friction b
 
 [الحل أ] التجاوز الكامل لطبقة جسر JavaScript
 
----
-
 
 [Solution A] Complete Bypass of the JavaScript Bridge Layer
 
@@ -548,6 +547,8 @@ Production-ready source codes, full integration frameworks, and bespoke consulti
 DM: TheRichModernMagician@tuta.com
 
 اللَّهُ أَكْبَرُ
+
+---
 
 - [Case Study #01: Real-Time Sync Deadlock & Retry Storm in Commercial WebGL](./docs/case-study-01-session-sync-deadlock.md)
 - [Benchmark Suite: Zero-Copy, Bit-Mask O(1) Lookup & Storage Mutex Test](./benchmarks/bridge-optimization-benchmark.js)
