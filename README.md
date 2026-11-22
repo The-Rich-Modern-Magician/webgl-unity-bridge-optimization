@@ -1,6 +1,5 @@
 - [Case Study #01: Real-Time Sync Deadlock & Retry Storm in Commercial WebGL](./docs/case-study-01-session-sync-deadlock.md)
-
-- - [Benchmark Suite: Zero-Copy, Bit-Mask O(1) Lookup & Storage Mutex Test](./benchmarks/bridge-optimization-benchmark.js)
+- [Benchmark Suite: Zero-Copy, Bit-Mask O(1) Lookup & Storage Mutex Test](./benchmarks/bridge-optimization-benchmark.js)
 
 
 📝 **Read on DEV Community (Article & Discussion):**
@@ -526,8 +525,7 @@ DM: TheRichModernMagician@tuta.com
 اللَّهُ أَكْبَرُ
 
 - [Case Study #01: Real-Time Sync Deadlock & Retry Storm in Commercial WebGL](./docs/case-study-01-session-sync-deadlock.md)
-
-- - [Benchmark Suite: Zero-Copy, Bit-Mask O(1) Lookup & Storage Mutex Test](./benchmarks/bridge-optimization-benchmark.js)
+- [Benchmark Suite: Zero-Copy, Bit-Mask O(1) Lookup & Storage Mutex Test](./benchmarks/bridge-optimization-benchmark.js)
 
 📝 **Read on DEV Community (Article & Discussion):**
 [Engineered in Japan GCC: Optimizing Unity WebGL / Emscripten JS Bridge (Zero-Copy FS & Branchless Lookup)](https://dev.to/therichmodernmagician/engineered-in-japan-gcc-optimizing-unity-webgl-emscripten-js-bridge-zero-copy-fs-branchless-4n32)
