@@ -534,3 +534,12 @@ DM: TheRichModernMagician@tuta.com
 
 🔗 **Official Hub & Sovereign Engine IP:**
 [The Rich Modern Magician Official | Linktree](https://linktr.ee)
+
+### ⚡ Running the Benchmark Suite
+
+No external dependencies required. Run directly with Node.js (v18+) or paste into any modern browser DevTools console:
+
+```bash
+node benchmarks/bridge-optimization-benchmark.js
+```
+
