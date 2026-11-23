@@ -15,9 +15,9 @@ scrollbar {
   -GtkScrollbar-has-forward-stepper: 1 !important;
   -GtkScrollbar-has-secondary-backward-stepper: 0;
   -GtkScrollbar-has-secondary-forward-stepper: 0;
-    /* تحديد الحد الأدنى للتمرير لكل نقرة (اضبط القيمة حسب الرغبة) */
-    /* Define minimum scroll amount per click (adjust as needed) */
-    /* 1クリックあたりの最小移動量を定義（数値はお好みで調整） */
+  /* [AR] تحديد عرض شريط التمرير وحجم أزرار الأسهم (اضبط القيمة حسب الرغبة) */
+  /* [EN] Define scrollbar width and stepper button size (adjust as needed) */
+  /* [JA] スクロールバーの太さと矢印ボタンのサイズを定義（数値はお好みで調整） */
   -GtkRange-slider-width: 18;
   -GtkRange-stepper-size: 18;
   /* [AR] تحديد الحد الأدنى لطول شريط التمرير (لمنع صغر حجمه وصعوبة الإمساك به) */
