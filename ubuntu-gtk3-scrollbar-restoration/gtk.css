@@ -1,0 +1,81 @@
+
+
+/* ==========================================================================
+ * Classic Wide Scrollbar & Stepper Restoration for GTK3 (Ubuntu / GNOME)
+ * Tested Environment: Ubuntu 24.04 LTS / GNOME (GTK 3.0)
+ * Note: Applies to GTK3 apps only (does not affect GTK4 or Firefox/Chrome).
+ * ex. /home/owner/.config/gtk-3.0/gtk.css
+ * ========================================================================== */
+
+/* 	إعدادات النمط المخصص */
+/* Custom style settings */
+/* カスタムスタイル設定 */
+scrollbar {
+  -GtkScrollbar-has-backward-stepper: 1 !important;
+  -GtkScrollbar-has-forward-stepper: 1 !important;
+  -GtkScrollbar-has-secondary-backward-stepper: 0;
+  -GtkScrollbar-has-secondary-forward-stepper: 0;
+    /* تحديد الحد الأدنى للتمرير لكل نقرة (اضبط القيمة حسب الرغبة) */
+    /* Define minimum scroll amount per click (adjust as needed) */
+    /* 1クリックあたりの最小移動量を定義（数値はお好みで調整） */
+  -GtkRange-slider-width: 18;
+  -GtkRange-stepper-size: 18;
+  /* [AR] تحديد الحد الأدنى لطول شريط التمرير (لمنع صغر حجمه وصعوبة الإمساك به) */
+  /* [EN] Set minimum slider length (prevents the thumb from becoming too tiny to grab) */
+  /* [JA] スライダー（つまみ）の最小長さを指定（極端に小さくなって掴めなくなるのを防ぐ） */
+  -GtkScrollbar-min-slider-length: 30;
+}
+
+/* 2. 2. ربط أوامر العرض بهيكل ".scrollbar" */
+/* 2. Attach display rules to the ".scrollbar" structure */
+/* 2. あなたの「.scrollbar」構造に「表示命令」をドッキング */
+.scrollbar,
+.scrollbar.vertical,
+.scrollbar.horizontal {
+  background-image: none !important;
+  border: none !important;
+  /* جعل الهامش 0 ليلتصق بشريط التمرير */
+  /* Set margin to 0 to stick closely to the slider */  
+  /* 隙間（マージン）を0にしてスライダーと密着させる */
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 3. تثبيت حجم الزر لتشكيل الأسهم */
+/* 3. Fix button size to shape the steppers */
+/* 3. ボタン自体のサイズを固定して「形」を作る */
+scrollbar button {
+  display: block !important;    /* إجبار الأزرار المخفية على الظهور - Force hidden/collapsed buttons to appear - 潰れているのを無理やり出す */
+  min-width: 18px !important;   /* عرض الزر - Button width - ボタンの横幅 */
+  min-height: 18px !important;  /* ارتفاع الزر - Button height - ボタンの高さ */
+  margin: 0 !important;         /* إزالة الفجوة مع شريط التمرير - Remove gap with the slider - スライダーとの隙間をなくす */
+  background-color: #eeeeee !important;
+  border: 1px solid #999999 !important;
+}
+
+/* 4. ربط تخصيص الأيقونات هنا */
+/* 4. Attach icon specifications here */
+/* 4. あなたの「アイコン指定」をここにドッキング */
+scrollbar button.up    { -gtk-icon-source: -gtk-icontheme("pan-up-symbolic") !important; }
+scrollbar button.down  { -gtk-icon-source: -gtk-icontheme("pan-down-symbolic") !important; }
+scrollbar button.left  { -gtk-icon-source: -gtk-icontheme("pan-start-symbolic") !important; }
+scrollbar button.right { -gtk-icon-source: -gtk-icontheme("pan-end-symbolic") !important; }
+
+/* 5. ربط السُمك بهيكل "slider" */
+/* 5. Attach thickness to the "slider" structure */
+/* 5. あなたの「slider」構造に「太さ」をドッキング */
+scrollbar slider {
+  min-width: 16px !important;   /* يجب أن يكون سميكًا بما يكفي ليتوافق مع الأزرار - Must be thick enough to align with buttons - ここを太くしないとボタンとずれます */
+  min-height: 16px !important;
+  border-radius: 7px !important;
+  background-color: #cccccc !important;
+  border: 1px solid #999999 !important;
+}
+
+/* السلوك عند تمرير المؤشر */
+/* Hover behavior */
+/* ホバー時の挙動 */
+scrollbar slider:hover {
+  background-color: #aaaaaa !important;
+}
+
