@@ -544,21 +544,21 @@ Commercial large-scale front-end engines often suffer from structural friction b
 - README.md: التقرير المعماري الرئيسي وتحسينات جسر JavaScript (النسخ الصفري، مصفوفات البت، القفل الحصري لـ IndexedDB، وعزل تخزين المصادقة).
 - docs/case-study-01-session-sync-deadlock.md: دراسة حالة واقعية لتحليل تعطل المزامنة الفورية وعواصف إعادة المحاولة (network_error) أثناء الأحداث التنافسية الضخمة.
 - benchmarks/bridge-optimization-benchmark.js: اختبارات قياس الأداء القابلة للتنفيذ لإثبات تقليل استهلاك الذاكرة وتسريع البحث ومنع تعارض المعاملات.
-- - ‎[ubuntu-gtk3-scrollbar-restoration/](https://github.com/The-Rich-Modern-Magician/webgl-unity-bridge-optimization/tree/main/ubuntu-gtk3-scrollbar-restoration): ‎أدوات تحسين واجهة المستخدم لنظام لينكس (استعادة أشرطة التمرير الكلاسيكية وأزرار الأسهم لتطبيقات GTK3).
+- ‎[ubuntu-gtk3-scrollbar-restoration/](https://github.com/The-Rich-Modern-Magician/webgl-unity-bridge-optimization/tree/main/ubuntu-gtk3-scrollbar-restoration): ‎أدوات تحسين واجهة المستخدم لنظام لينكس (استعادة أشرطة التمرير الكلاسيكية وأزرار الأسهم لتطبيقات GTK3).
 
 🇬🇧 English
 
 - README.md: Core architectural optimization report for Unity WebGL JS Bridge (Zero-Copy Transfer, Bit-Mask Lookup, IDBFS Mutex Lock, and Auth Vault Isolation).
 - docs/case-study-01-session-sync-deadlock.md: Real-world production incident analysis covering real-time sync deadlocks, unbounded retry storms (network_error), and forced re-authentication loops during large-scale PvP events.
 - benchmarks/bridge-optimization-benchmark.js: Executable JavaScript benchmarks verifying RAM reduction, O(1) bit-mask lookup speed, and serialized IndexedDB transaction safety.
-- - [ubuntu-gtk3-scrollbar-restoration/](https://github.com/The-Rich-Modern-Magician/webgl-unity-bridge-optimization/tree/main/ubuntu-gtk3-scrollbar-restoration): Linux desktop UX utility (Classic wide scrollbar & stepper arrow restoration CSS for Ubuntu / GNOME GTK3 apps).
+- [ubuntu-gtk3-scrollbar-restoration/](https://github.com/The-Rich-Modern-Magician/webgl-unity-bridge-optimization/tree/main/ubuntu-gtk3-scrollbar-restoration): Linux desktop UX utility (Classic wide scrollbar & stepper arrow restoration CSS for Ubuntu / GNOME GTK3 apps).
 
 🇯🇵 日本語 (Japanese)
 
 - README.md: Unity WebGL JSブリッジの主要アーキテクチャ最適化レポート（ゼロコピー転送、ビットマスク探索、IDBFS排他ロック制御、認証セッションとキャッシュの完全分離）。
 - docs/case-study-01-session-sync-deadlock.md: 大規模リアルタイムPvPイベント開始時に発生した通信エラー（network_error）・リトライ暴走・同期デッドロック・強制再認証ループの実戦障害解析ケーススタディ。
 - benchmarks/bridge-optimization-benchmark.js: メモリ削減効果・O(1)ビットマスク探索速度・IndexedDBトランザクション直列化の安全性を実測証明する検証用ベンチマークスクリプト。
-- - [ubuntu-gtk3-scrollbar-restoration/](https://github.com/The-Rich-Modern-Magician/webgl-unity-bridge-optimization/tree/main/ubuntu-gtk3-scrollbar-restoration): LinuxデスクトップUX改善ユーティリティ（Ubuntu / GNOME環境におけるGTK3アプリのスクロールバー太さ・矢印ボタン復元CSS）。
+- [ubuntu-gtk3-scrollbar-restoration/](https://github.com/The-Rich-Modern-Magician/webgl-unity-bridge-optimization/tree/main/ubuntu-gtk3-scrollbar-restoration): LinuxデスクトップUX改善ユーティリティ（Ubuntu / GNOME環境におけるGTK3アプリのスクロールバー太さ・矢印ボタン復元CSS）。
 
 
 ---
